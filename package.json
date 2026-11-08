@@ -1,0 +1,17 @@
+{
+  "name": "jaheziya-cs-platform",
+  "version": "1.0.0",
+  "description": "منصة الجاهزية والمعياري التفاعلية لعلوم الحاسب - جامعة أم القرى وهيئة تقويم التعليم والتدريب",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "cs",
+    "jaheziya",
+    "etec",
+    "uqu",
+    "exam"
+  ],
+  "author": "Alfred & Senior CS Team",
+  "license": "MIT"
+}
