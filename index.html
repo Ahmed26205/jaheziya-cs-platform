@@ -2328,60 +2328,8 @@
         container.appendChild(svgWrap);
       }
 
-      // 3. Domain Subtopics Hub (Interactive Competency Grid with Read & Mark Done buttons)
-      const hubSection = document.createElement('div');
-      hubSection.className = 'theory-section';
-      
-      const doneCount = ch.subtopics.filter(s => userState.readChecklist.includes(s.id)).length;
-      const totalSub = ch.subtopics.length;
-      const pct = Math.round((doneCount / totalSub) * 100);
-
-      hubSection.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-          <div>
-            <h3 style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-              <span>📋</span> Domain Competencies Hub & Direct Navigation
-            </h3>
-            <p style="color: #94a3b8; font-size: 13.5px; margin: 0;">
-              Every subtopic is mapped to official standardized exam specifications. Click <strong>📖 Read Lesson</strong> to jump directly, or <strong>Mark Done</strong> to track progress.
-            </p>
-          </div>
-          <div id="hubCounterBadge" style="font-size: 13px; font-weight: 700; color: var(--active-color, #38bdf8); background: #0c1524; border: 1px solid var(--border-subtle); padding: 6px 14px; border-radius: 20px;">
-            ${doneCount} / ${totalSub} Competencies Mastered (${pct}%)
-          </div>
-        </div>
-      `;
-
-      const hubGrid = document.createElement('div');
-      hubGrid.className = 'subtopics-hub-grid';
-      ch.subtopics.forEach(sub => {
-        const isDone = userState.readChecklist.includes(sub.id);
-        const card = document.createElement('div');
-        card.id = `hub_card_${sub.id.replace('.', '_')}`;
-        card.className = `subtopic-hub-card ${isDone ? 'completed' : ''}`;
-        card.innerHTML = `
-          <div class="subtopic-hub-header">
-            <div style="display: flex; align-items: flex-start; gap: 8px;">
-              <span class="subtopic-hub-badge">${sub.id}</span>
-              <span class="subtopic-hub-title">${sub.title}</span>
-            </div>
-            ${isDone ? '<span class="status-pill" style="font-size: 11px; font-weight: 700; color: #10b981; background: rgba(16,185,129,0.12); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.3); flex-shrink: 0;">✓ Mastered</span>' : ''}
-          </div>
-          <div class="subtopic-hub-actions">
-            <button class="btn-read-hub" onclick="scrollToLesson('${sub.id}', event)">
-              <span>📖</span> Read Lesson ↓
-            </button>
-            <button class="btn-mark-hub ${isDone ? 'completed' : ''}" onclick="toggleReadState('${sub.id}', event)">
-              <span>${isDone ? '✓' : '○'}</span> ${isDone ? 'Completed' : 'Mark Done'}
-            </button>
-          </div>
-        `;
-        hubGrid.appendChild(card);
-      });
-      hubSection.appendChild(hubGrid);
-      container.appendChild(hubSection);
-
-      // 4. In-Depth Pedagogical Lessons (All 54 Lessons with Theory, Math, Tables & Worked Examples)
+      // Domain Subtopics Hub removed for clean direct layout
+      // 3. In-Depth Pedagogical Lessons (All 54 Lessons with Theory, Math, Tables & Worked Examples)
       const lessons = (ch.lessons && ch.lessons.length > 0) ? ch.lessons : (curr.lessons || []);
       if (lessons && lessons.length > 0) {
         lessons.forEach(l => {
