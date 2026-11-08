@@ -238,20 +238,7 @@
     }
 
     /* Subtopics expanded tree under active chapter */
-    .subtopics-tree {
-      display: none;
-      padding: 4px 8px 10px 42px;
-      flex-direction: column;
-      gap: 4px;
-      border-left: 2px solid rgba(255, 255, 255, 0.06);
-      margin-left: 24px;
-      margin-top: 4px;
-    }
-
-    .chapter-item.active .subtopics-tree {
-      display: flex;
-      border-left-color: var(--active-color, #38bdf8);
-    }
+    /* (Subtopics tree styles moved to animations section) */
 
     .subtopic-item {
       font-size: 12px;
@@ -1894,6 +1881,129 @@
       color: #cbd5e1;
     }
 
+  
+    /* ---------------- Smooth Fluid Transitions & Animations ---------------- */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    @keyframes chapterSlideFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(18px);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes cardCascade {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chapter-transition-in {
+      animation: chapterSlideFadeIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .main-wrapper {
+      transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .chapter-hero {
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .chapter-hero::after {
+      transition: background 0.5s ease;
+    }
+
+    .chapter-item {
+      border-radius: 12px;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .chapter-item:hover:not(.active) {
+      transform: translateX(4px);
+    }
+
+    .chapter-item.active {
+      transform: translateX(6px);
+    }
+
+    .chapter-item .chapter-number-badge {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .chapter-item.active .chapter-number-badge {
+      transform: scale(1.14);
+    }
+
+    .subtopics-tree {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, padding 0.3s ease;
+      display: flex;
+      padding: 0 8px 0 42px;
+      flex-direction: column;
+      gap: 4px;
+      border-left: 2px solid rgba(255, 255, 255, 0.06);
+      margin-left: 24px;
+    }
+
+    .chapter-item.active .subtopics-tree {
+      max-height: 900px;
+      opacity: 1;
+      padding: 6px 8px 12px 42px;
+      border-left-color: var(--active-color, #38bdf8);
+    }
+
+    .subtopic-item {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .subtopic-item:hover {
+      transform: translateX(4px);
+    }
+
+    .option-card {
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .option-card:hover:not(.locked) {
+      transform: translateX(5px);
+    }
+
+    .option-card:active:not(.locked) {
+      transform: scale(0.99);
+    }
+
+    .mode-btn {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .mode-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .mode-btn.active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
   </style>
 </head>
 <body>
@@ -2308,6 +2418,14 @@
       // Re-render sidebar to highlight active chapter and update percentages
       renderSidebar();
 
+      // Trigger fluid entrance animation on the main view
+      const mainWrapper = document.getElementById('mainWrapper');
+      if (mainWrapper) {
+        mainWrapper.classList.remove('chapter-transition-in');
+        void mainWrapper.offsetWidth; // Force DOM reflow
+        mainWrapper.classList.add('chapter-transition-in');
+      }
+
       // Scroll to top of main
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -2336,9 +2454,10 @@
       // 3. In-Depth Pedagogical Lessons (All 54 Lessons with Theory, Math, Tables & Worked Examples)
       const lessons = (ch.lessons && ch.lessons.length > 0) ? ch.lessons : (curr.lessons || []);
       if (lessons && lessons.length > 0) {
-        lessons.forEach(l => {
+        lessons.forEach((l, idx) => {
           const lWrap = document.createElement('div');
           lWrap.innerHTML = l.content;
+          lWrap.style.animation = `cardCascade 0.38s cubic-bezier(0.16, 1, 0.3, 1) ${Math.min(idx * 0.04, 0.32)}s both`;
           
           // Sync internal button state
           const isDone = userState.readChecklist.includes(l.id);
@@ -2517,8 +2636,9 @@
         return;
       }
 
-      filtered.forEach(q => {
+      filtered.forEach((q, idx) => {
         const card = createQuestionCard(q, ch);
+        card.style.animation = `cardCascade 0.35s cubic-bezier(0.16, 1, 0.3, 1) ${Math.min(idx * 0.035, 0.28)}s both`;
         container.appendChild(card);
       });
 
