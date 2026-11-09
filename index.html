@@ -1338,19 +1338,48 @@
       white-space: nowrap;
     }
 
+    /* Desktop Sidebar Collapsed State */
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+    .app-header.expanded {
+      left: 0 !important;
+    }
+    .main-wrapper.expanded {
+      margin-left: 0 !important;
+    }
+
+    /* Mobile Sidebar & Backdrop Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 45;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    }
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
     /* Responsive Mobile */
     @media (max-width: 900px) {
       .sidebar {
         transform: translateX(-100%);
+        z-index: 50;
       }
       .sidebar.open {
         transform: translateX(0);
       }
       .app-header {
-        left: 0;
+        left: 0 !important;
       }
       .main-wrapper {
-        margin-left: 0;
+        margin-left: 0 !important;
         padding: 20px 16px 80px;
       }
     }
@@ -2009,6 +2038,7 @@
 <body>
 
   <!-- ================= Sidebar ================= -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="brand-box">
@@ -2326,9 +2356,33 @@
     }
 
     function setupEventListeners() {
-      document.getElementById('menuToggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('open');
-      });
+      const toggleBtn = document.getElementById('menuToggle');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+      }
+      const overlay = document.getElementById('sidebarOverlay');
+      if (overlay) {
+        overlay.addEventListener('click', toggleSidebar);
+      }
+    }
+
+    function toggleSidebar() {
+      const isMobile = window.innerWidth <= 900;
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const mainWrapper = document.getElementById('mainWrapper');
+      const appHeader = document.getElementById('appHeader');
+
+      if (!sidebar) return;
+
+      if (isMobile) {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('active', sidebar.classList.contains('open'));
+      } else {
+        sidebar.classList.toggle('collapsed');
+        if (mainWrapper) mainWrapper.classList.toggle('expanded', sidebar.classList.contains('collapsed'));
+        if (appHeader) appHeader.classList.toggle('expanded', sidebar.classList.contains('collapsed'));
+      }
     }
 
     // Render Sidebar matching screenshot
@@ -2417,6 +2471,14 @@
 
       // Re-render sidebar to highlight active chapter and update percentages
       renderSidebar();
+
+      // Auto close mobile sidebar when selecting a chapter
+      if (window.innerWidth <= 900) {
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('sidebarOverlay');
+        if (sb) sb.classList.remove('open');
+        if (ov) ov.classList.remove('active');
+      }
 
       // Trigger fluid entrance animation on the main view
       const mainWrapper = document.getElementById('mainWrapper');
